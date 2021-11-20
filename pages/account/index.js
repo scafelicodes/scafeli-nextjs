@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
-import Head from 'next/head';
-import Root from '../../components/common/Root';
-import Footer from '../../components/common/Footer';
-import TemplatePage from '../../components/common/TemplatePage';
-import LoggedOut from '../loggedOut';
-import Link from 'next/link';
-import commerce from '../../lib/commerce';
-import moment from 'moment';
-import { connect } from 'react-redux';
-import Router, { withRouter } from 'next/router';
+import React, { Component } from "react";
+import Head from "next/head";
+import Root from "../../components/common/Root";
+import Footer from "../../components/common/Footer";
+import TemplatePage from "../../components/common/TemplatePage";
+import LoggedOut from "../loggedOut";
+import Link from "next/link";
+import commerce from "../../lib/commerce";
+import moment from "moment";
+import { connect } from "react-redux";
+import Router, { withRouter } from "next/router";
 
 class CustomerAccountPage extends Component {
   constructor(props) {
@@ -31,7 +31,7 @@ class CustomerAccountPage extends Component {
   verifyAuth() {
     const isLogged = commerce.customer.isLoggedIn();
     if (!isLogged) {
-      return Router.push('/');
+      return Router.push("/");
     }
     this.getOrders();
   }
@@ -43,7 +43,7 @@ class CustomerAccountPage extends Component {
     const date = moment.unix(dateTime);
 
     if (date.isValid()) {
-      return date.format('MMM Do Y');
+      return date.format("DD.MM.YYYY");
     }
     return null;
   }
@@ -56,7 +56,9 @@ class CustomerAccountPage extends Component {
       return null;
     }
     return (
-      <small><strong>Customer since:</strong> { this.formatDate(this.props.customer.created) }</small>
+      <small>
+        <strong>Cliente desde:</strong> {this.formatDate(this.props.customer.created)}
+      </small>
     );
   }
 
@@ -64,19 +66,18 @@ class CustomerAccountPage extends Component {
    * Get the orders
    */
   getOrders() {
-    return commerce.customer.getOrders()
+    return commerce.customer
+      .getOrders()
       .then((response) => {
         this.setState({
           isError: false,
           orders: response.data,
         });
       })
-      .catch((error)=>{
+      .catch((error) => {
         this.setState({
           isError: true,
-          message: [
-            'Opps, looks like an error occurred!'
-          ],
+          message: ["Opps, looks like an error occurred!"],
         });
       });
   }
@@ -86,25 +87,17 @@ class CustomerAccountPage extends Component {
    */
   getFulfillmentStatus(status) {
     if (!status) {
-      return (
-        <span className="badge badge-secondary">Processing</span>
-      );
+      return <span className="badge badge-secondary">Processando</span>;
     }
-    if (status === 'fulfilled') {
-      return (
-        <span className="badge badge-primary">Fullfilled</span>
-      );
+    if (status === "fulfilled") {
+      return <span className="badge badge-primary">Fullfilled</span>;
     }
 
-    if (status === 'not_fulfilled') {
-      return (
-        <span className="badge badge-secondary">Processing</span>
-      );
+    if (status === "not_fulfilled") {
+      return <span className="badge badge-secondary">Processando</span>;
     }
 
-    return (
-      <span className="badge badge-secondary">Processing</span>
-    );
+    return <span className="badge badge-secondary">Processando</span>;
   }
 
   /**
@@ -112,32 +105,22 @@ class CustomerAccountPage extends Component {
    */
   getPaymentStatus(status) {
     if (!status) {
-      return (
-        <span className="badge badge-secondary">Pending</span>
-      );
+      return <span className="badge badge-secondary">Pendente</span>;
     }
 
-    if (status === 'not-paid') {
-      return (
-        <span className="badge badge-warning">Not paid</span>
-      );
+    if (status === "not-paid") {
+      return <span className="badge badge-warning">Not paid</span>;
     }
 
-    if (status === 'paid') {
-      return (
-        <span className="badge badge-success">Paid</span>
-      );
+    if (status === "paid") {
+      return <span className="badge badge-success">Pago</span>;
     }
 
-    if (status === 'refunded') {
-      return (
-        <span className="badge badge-danger">Refunded</span>
-      );
+    if (status === "refunded") {
+      return <span className="badge badge-danger">Refunded</span>;
     }
 
-    return (
-      <span className="badge badge-secondary">Pending</span>
-    );
+    return <span className="badge badge-secondary">Pendente</span>;
   }
 
   /**
@@ -147,11 +130,7 @@ class CustomerAccountPage extends Component {
     const { orders } = this.state;
 
     if (!orders || !orders.length) {
-      return (
-        <div>
-          You havent placed an order yet!
-        </div>
-      );
+      return <div>Você ainda não fez nenhum pedido!</div>;
     }
 
     const { shipping } = this.state.orders[0];
@@ -162,11 +141,17 @@ class CustomerAccountPage extends Component {
 
     return (
       <div>
-        <div>{ shipping.name }</div>
-        <div>{ shipping.street }</div>
-        { shipping.street_2 && <div>{ shipping.street_2 }</div> }
-        <div>{ shipping.town_city}{(shipping.town_city && shipping.county_state) ? ',':'' } { shipping.county_state }</div>
-        <div>{ shipping.country}{(shipping.country && shipping.postal_zip_code) ? ',':'' } { shipping.postal_zip_code }</div>
+        <div>{shipping.name}</div>
+        <div>{shipping.street}</div>
+        {shipping.street_2 && <div>{shipping.street_2}</div>}
+        <div>
+          {shipping.town_city}
+          {shipping.town_city && shipping.county_state ? "," : ""} {shipping.county_state}
+        </div>
+        <div>
+          {shipping.country}
+          {shipping.country && shipping.postal_zip_code ? "," : ""} {shipping.postal_zip_code}
+        </div>
       </div>
     );
   }
@@ -177,51 +162,47 @@ class CustomerAccountPage extends Component {
     if (!orders || !orders.length) {
       return (
         <div className="card text-center p-2">
-          <p>You haven&apos;t placed any orders yet!</p>
+          <p>Você ainda não fez nenhum pedido!</p>
         </div>
       );
     }
 
     return (
       <table className="table table-bordered">
-      <thead>
-        <tr>
-          <th>Order</th>
-          <th>Payment</th>
-          <th>Fulfillment</th>
-          <th>Total</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {this.state.orders.map((order) => {
-          return (
-            <tr key={ order.id }>
-              <td>
-                <div>
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Payment</th>
+            <th>Fulfillment</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.state.orders.map((order) => {
+            return (
+              <tr key={order.id}>
+                <td>
+                  <div>
+                    <Link href={`account/${order.id}`}>
+                      <a>#{order.customer_reference}</a>
+                    </Link>
+                  </div>
+                  <small className="text-muted">{this.formatDate(order.created)}</small>
+                </td>
+                <td>{this.getPaymentStatus(order.status_payment)}</td>
+                <td>{this.getFulfillmentStatus(order.status_fulfillment)}</td>
+                <td>{order.order_value.formatted_with_symbol}</td>
+                <td>
                   <Link href={`account/${order.id}`}>
-                    <a>#{ order.customer_reference }</a>
+                    <a>View order</a>
                   </Link>
-                </div>
-                <small className="text-muted">{ this.formatDate(order.created) }</small>
-              </td>
-              <td>
-                { this.getPaymentStatus(order.status_payment) }
-              </td>
-              <td>
-                { this.getFulfillmentStatus(order.status_fulfillment) }
-              </td>
-              <td>{ order.order_value.formatted_with_symbol }</td>
-              <td>
-                <Link href={`account/${order.id}`}>
-                  <a>View order</a>
-                </Link>
-              </td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     );
   }
 
@@ -232,39 +213,33 @@ class CustomerAccountPage extends Component {
     }
 
     // Generate alert message as either list or single line.
-    const alertMessage = message.length === 1
-      ? message[0]
-      : (
+    const alertMessage =
+      message.length === 1 ? (
+        message[0]
+      ) : (
         <ul className="text-left m-0">
-          { message.map((copy) => <li key={copy}>{copy}</li>) }
+          {message.map((copy) => (
+            <li key={copy}>{copy}</li>
+          ))}
         </ul>
       );
 
     return (
-      <div className={`alert ${isError ? 'alert-danger' : 'alert-success'}`}>
-        { alertMessage }
-      </div>
+      <div className={`alert ${isError ? "alert-danger" : "alert-success"}`}>{alertMessage}</div>
     );
   }
 
   render() {
-
     if (this.props.loading.customer) {
-      return <TemplatePage page={  { message: 'Loading...' }  } />
+      return <TemplatePage page={{ message: "Carregando..." }} />;
     }
 
     // Displays message when the customer logs out.
     if (!this.props.customer) {
-      return (
-        <LoggedOut />
-      );
+      return <LoggedOut />;
     }
 
-    const {
-      firstname,
-      lastname,
-      email,
-    } = this.props.customer;
+    const { firstname, lastname, email } = this.props.customer;
 
     return (
       <Root>
@@ -275,24 +250,22 @@ class CustomerAccountPage extends Component {
           <div className="custom-container py-5 my-4 my-sm-5">
             <div className="row mt-4">
               <div className="col-12">
-                <h2 className="font-size-header mb-4 pt-5 text-center">
-                  My account
-                </h2>
-                { this.renderAlert() }
+                <h2 className="font-size-header mb-4 pt-5 text-center">My account</h2>
+                {this.renderAlert()}
               </div>
             </div>
             <div className="row mt-5 pt-5">
               <div className="col-12 col-md-8 col-lg-8">
                 <div className="d-flex flex-row justify-content-between">
                   <h5>Order history</h5>
-                  { this.customerSince() }
+                  {this.customerSince()}
                 </div>
-                { this.renderOrdersTable() }
+                {this.renderOrdersTable()}
               </div>
               <div className="col-12 col-md-4 col-lg-4 row-content">
                 <div className="card p-2 mt-6">
                   <h5 className="mb-2">
-                  { firstname } { lastname }
+                    {firstname} {lastname}
                   </h5>
                   <a
                     href={`mailto:${email}`}
@@ -300,12 +273,10 @@ class CustomerAccountPage extends Component {
                     rel="noopener noreferrer"
                     className="mb-2"
                   >
-                    { email }
+                    {email}
                   </a>
-                  <h6>
-                    Shipping address
-                  </h6>
-                  { this.renderShippingAddress() }
+                  <h6>Shipping address</h6>
+                  {this.renderShippingAddress()}
                 </div>
               </div>
             </div>
@@ -324,8 +295,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-  )(CustomerAccountPage),
-);
+export default withRouter(connect(mapStateToProps)(CustomerAccountPage));
